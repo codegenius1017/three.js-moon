@@ -1,0 +1,44 @@
+<head>
+  <style> body { margin: 0; } </style>
+  <script src="https://unpkg.com/react/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone"></script>
+  <script src="https://unpkg.com/d3-array"></script>
+  <script src="https://unpkg.com/d3-scale"></script>
+  <script src="https://unpkg.com/react-globe.gl"></script>
+  <!--<script src="../../dist/react-globe.gl.js"></script>-->
+</head>
+<body>
+<div id="globeViz"></div>
+<script type="text/jsx">
+  const { useState, useEffect } = React;
+  const colorScale = d3.scaleOrdinal(['blue', 'blue', 'blue', 'red']); // Set the color scale for labels
+  const Moon = () => {
+    const [landingSites, setLandingSites] = useState([]);
+    useEffect(() => {
+      fetch('./moon_landings.json')
+        .then(r => r.json())
+        .then(setLandingSites);
+    }, []);
+    return (
+      <Globe
+        globeImageUrl="./lunar_surface.jpg"
+        bumpImageUrl="./lunar_bumpmap.jpg"
+        backgroundImageUrl="https://unpkg.com/three-globe/example/img/night-sky.png"
+        showGraticules={true}
+        labelsData={landingSites}
+        labelLat={(d) => d.lat}
+        labelLng={(d) => d.lng}
+        labelText={(d) => d.name}
+        labelSize={5}
+        labelColor={(d) => colorScale(d.name)} // Use the color scale to set label colors
+        labelDotRadius={1}
+      />
+    );
+  };
+  ReactDOM.render(
+    <Moon />,
+    document.getElementById('globeViz')
+  );
+</script>
+</body>
